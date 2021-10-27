@@ -1,0 +1,35 @@
+version: '3.4'
+services:
+  keycloak:
+    image: jboss/keycloak:7.0.0
+    healthcheck:
+      test: "exit 0"
+    ports:
+        - 8080:8080
+        - 8543:8543
+        - 10090:10090
+    environment:
+      KEYCLOAK_USER: aaaaaaaa
+      KEYCLOAK_PASSWORD: xxxxxxxxxxx
+      PROXY_ADDRESS_FORWARDING: "true"
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: keycloak
+      DB_USER: aaaaaaaaaaaaa
+      DB_PASSWORD: xxxxxxxxxxxx
+
+    command: "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/realm-api.json,/opt/jboss/keycloak/realm-app.json"
+    volumes:
+    - ./realm-api.json:/opt/jboss/keycloak/realm-api.json
+    - ./realm-app.json:/opt/jboss/keycloak/realm-app.json
+    - ../server/themes/mycompany:/opt/jboss/keycloak/themes/mycompany
+    depends_on:
+      - postgres
+    
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: aaaaaaa
+      POSTGRES_PASSWORD: xxxxxxxxx
